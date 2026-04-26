@@ -62,6 +62,28 @@
                 </li>
             @endcan
 
+            @if(auth()->user()->can('transport_settings.index') || auth()->user()->can('transport_allowances.index'))
+                <li class="menu-item {{ request()->is('transport*') ? 'open' : '' }}">
+                    <div class="menu-link" onclick="toggleSubmenu(this)">
+                        <i class="fas fa-car-side"></i>
+                        <span class="menu-text">Tunjangan Transport</span>
+                        <i class="fas fa-chevron-right arrow"></i>
+                    </div>
+                    <ul class="submenu" style="{{ request()->is('transport*') ? 'display:block;' : '' }}">
+                        @can('transport_settings.index')
+                            <li><a href="{{ route('transport-settings.index') }}"
+                                    class="submenu-link {{ request()->is('transport/settings*') ? 'active' : '' }}">Pengaturan Tarif</a>
+                            </li>
+                        @endcan
+                        @can('transport_allowances.index')
+                            <li><a href="{{ route('transport-allowances.index') }}"
+                                    class="submenu-link {{ request()->is('transport/allowances*') ? 'active' : '' }}">Data Tunjangan</a>
+                            </li>
+                        @endcan
+                    </ul>
+                </li>
+            @endif
+
             @can('activity_logs.index')
                 <li class="menu-item">
                     <a href="{{ route('activity-logs.index') }}"

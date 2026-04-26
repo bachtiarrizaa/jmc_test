@@ -30,7 +30,7 @@
                     <div class="col-md-4 ms-auto">
                         <div class="search-container">
                             <i class="fas fa-search"></i>
-                            <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari role..."
+                            <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari"
                                 value="{{ request('search') }}" onkeyup="if(event.keyCode == 13) this.form.submit()">
                         </div>
                     </div>

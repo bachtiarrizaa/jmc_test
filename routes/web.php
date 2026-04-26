@@ -7,6 +7,8 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\EmployeeTypeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\TransportSettingController;
+use App\Http\Controllers\TransportAllowanceController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -56,4 +58,20 @@ Route::middleware('auth')->group(function () {
 
     Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index')
         ->middleware('permission:activity_logs.index');
+
+    Route::prefix('transport')->group(function () {
+        Route::prefix('settings')->name('transport-settings.')->group(function () {
+            Route::get('/', [TransportSettingController::class, 'index'])->name('index')->middleware('permission:transport_settings.index');
+            Route::post('/', [TransportSettingController::class, 'store'])->name('store')->middleware('permission:transport_settings.create');
+            Route::put('/{transportSetting}', [TransportSettingController::class, 'update'])->name('update')->middleware('permission:transport_settings.edit');
+            Route::delete('/{transportSetting}', [TransportSettingController::class, 'destroy'])->name('destroy')->middleware('permission:transport_settings.delete');
+        });
+
+        Route::prefix('allowances')->name('transport-allowances.')->group(function () {
+            Route::get('/', [TransportAllowanceController::class, 'index'])->name('index')->middleware('permission:transport_allowances.index');
+            Route::post('/', [TransportAllowanceController::class, 'store'])->name('store')->middleware('permission:transport_allowances.create');
+            Route::put('/{transportAllowance}', [TransportAllowanceController::class, 'update'])->name('update')->middleware('permission:transport_allowances.edit');
+            Route::delete('/{transportAllowance}', [TransportAllowanceController::class, 'destroy'])->name('destroy')->middleware('permission:transport_allowances.delete');
+        });
+    });
 });

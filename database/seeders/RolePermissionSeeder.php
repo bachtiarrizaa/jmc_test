@@ -46,6 +46,14 @@ class RolePermissionSeeder extends Seeder
                 'path' => '/logs',
                 'actions' => ['activity_logs.index']
             ],
+            'transport_settings' => [
+                'path' => '/transport/settings',
+                'actions' => ['transport_settings.index', 'transport_settings.create', 'transport_settings.edit', 'transport_settings.delete']
+            ],
+            'transport_allowances' => [
+                'path' => '/transport/allowances',
+                'actions' => ['transport_allowances.index', 'transport_allowances.create', 'transport_allowances.edit', 'transport_allowances.delete']
+            ],
         ];
 
         foreach ($permissions as $module => $data) {
@@ -65,10 +73,13 @@ class RolePermissionSeeder extends Seeder
         $superadmin = Role::firstOrCreate(['name' => 'Superadmin']);
         $managerHrd = Role::firstOrCreate(['name' => 'Manager HRD']);
         $adminHrd = Role::firstOrCreate(['name' => 'Admin HRD']);
+        $karyawan = Role::firstOrCreate(['name' => 'Karyawan']);
 
         $superadmin->givePermissionTo(Permission::all());
 
         $managerHrd->givePermissionTo(['dashboard.index', 'activity_logs.index']);
+
+        $karyawan->givePermissionTo(['dashboard.index']);
 
         $adminHrd->givePermissionTo([
             'dashboard.index',
@@ -86,7 +97,14 @@ class RolePermissionSeeder extends Seeder
             'employees.edit',
             'employees.delete',
             'users.index',
-            'users.edit'
+            'users.edit',
+            'transport_settings.index',
+            'transport_settings.create',
+            'transport_settings.edit',
+            'transport_allowances.index',
+            'transport_allowances.create',
+            'transport_allowances.edit',
+            'transport_allowances.delete'
         ]);
     }
 }

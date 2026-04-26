@@ -67,4 +67,14 @@ class Employee extends Model
     {
         return $this->hasOne(EmployeeAddress::class);
     }
+
+    public function transportAllowances(): HasMany
+    {
+        return $this->hasMany(TransportAllowance::class);
+    }
+
+    public function isPermanent(): bool
+    {
+        return $this->type?->name === 'Staff Tetap';
+    }
 }
