@@ -19,6 +19,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Illuminate\Pagination\Paginator::useBootstrapFive();
+
+        // Implicitly grant "Superadmin" role all permissions
+        // This works in the app by using gate-related functions like auth()->user->can() and @can()
+        \Illuminate\Support\Facades\Gate::before(function ($user, $string) {
+            return $user->hasRole('Superadmin') ? true : null;
+        });
     }
 }
