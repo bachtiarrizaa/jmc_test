@@ -30,29 +30,32 @@
                 </a>
             </li>
 
-            <li
-                class="menu-item {{ request()->is('departments*') || request()->is('positions*') || request()->is('employee-types*') || request()->is('roles*') ? 'open' : '' }}">
-                <div class="menu-link" onclick="toggleSubmenu(this)">
-                    <i class="fas fa-database"></i>
-                    <span class="menu-text">Master Data</span>
-                    <i class="fas fa-chevron-right arrow"></i>
-                </div>
-                <ul class="submenu"
-                    style="{{ request()->is('departments*') || request()->is('positions*') || request()->is('employee-types*') || request()->is('roles*') ? 'display:block;' : '' }}">
-                    @can('roles.index')
-                        <li><a href="{{ route('roles.index') }}"
-                                class="submenu-link {{ request()->is('roles*') ? 'active' : '' }}">Role & Permission</a>
-                        </li>
-                    @endcan
-                    <li><a href="{{ route('employee-types.index') }}"
-                            class="submenu-link {{ request()->is('employee-types*') ? 'active' : '' }}">Tipe Pegawai</a>
-                    </li>
-                    <li><a href="{{ route('departments.index') }}"
-                            class="submenu-link {{ request()->is('departments*') ? 'active' : '' }}">Departemen</a></li>
-                    <li><a href="{{ route('positions.index') }}"
-                            class="submenu-link {{ request()->is('positions*') ? 'active' : '' }}">Jabatan</a></li>
-                </ul>
-            </li>
+            @if(auth()->user()->can('roles.index') || auth()->user()->can('users.index') || auth()->user()->can('employee-types.index') || auth()->user()->can('departments.index') || auth()->user()->can('positions.index'))
+                <li class="menu-item {{ request()->is('roles*') || request()->is('users*') || request()->is('departments*') || request()->is('positions*') || request()->is('employee-types*') ? 'open' : '' }}">
+                    <div class="menu-link" onclick="toggleSubmenu(this)">
+                        <i class="fas fa-database"></i>
+                        <span class="menu-text">Master Data</span>
+                        <i class="fas fa-chevron-right arrow"></i>
+                    </div>
+                    <ul class="submenu" style="{{ request()->is('roles*') || request()->is('users*') || request()->is('departments*') || request()->is('positions*') || request()->is('employee-types*') ? 'display:block;' : '' }}">
+                        @can('roles.index')
+                            <li><a href="{{ route('roles.index') }}" class="submenu-link {{ request()->is('roles*') ? 'active' : '' }}">Role & Permission</a></li>
+                        @endcan
+                        @can('users.index')
+                            <li><a href="{{ route('users.index') }}" class="submenu-link {{ request()->is('users*') ? 'active' : '' }}">Manajemen User</a></li>
+                        @endcan
+                        @can('employee-types.index')
+                            <li><a href="{{ route('employee-types.index') }}" class="submenu-link {{ request()->is('employee-types*') ? 'active' : '' }}">Tipe Pegawai</a></li>
+                        @endcan
+                        @can('departments.index')
+                            <li><a href="{{ route('departments.index') }}" class="submenu-link {{ request()->is('departments*') ? 'active' : '' }}">Departemen</a></li>
+                        @endcan
+                        @can('positions.index')
+                            <li><a href="{{ route('positions.index') }}" class="submenu-link {{ request()->is('positions*') ? 'active' : '' }}">Jabatan</a></li>
+                        @endcan
+                    </ul>
+                </li>
+            @endif
 
             @can('employees.index')
                 <li class="menu-item">

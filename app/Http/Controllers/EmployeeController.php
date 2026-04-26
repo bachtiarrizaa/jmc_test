@@ -73,15 +73,23 @@ class EmployeeController extends Controller
 
     public function destroy(Employee $employee)
     {
-        $this->employeeService->delete($employee);
-        return redirect()->route('employees.index')->with('success', 'Data pegawai berhasil dihapus.');
+        try {
+            $this->employeeService->delete($employee);
+            return redirect()->route('employees.index')->with('success', 'Data pegawai berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('employees.index')->with('error', $e->getMessage());
+        }
     }
 
     public function bulkDelete(Request $request)
     {
-        $request->validate(['ids' => 'required|array']);
-        $this->employeeService->bulkDelete($request->ids);
-        return response()->json(['message' => 'Data pegawai terpilih berhasil dihapus.']);
+        try {
+            $request->validate(['ids' => 'required|array']);
+            $this->employeeService->bulkDelete($request->ids);
+            return response()->json(['message' => 'Data pegawai terpilih berhasil dihapus.']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 403);
+        }
     }
 
     public function bulkUpdateStatus(Request $request)

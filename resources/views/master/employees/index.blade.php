@@ -25,9 +25,11 @@
                                         class="far fa-file-excel me-2 text-success"></i> Excel</a></li>
                         </ul>
                     </div>
+                    @can('employees.create')
                     <a href="{{ route('employees.create') }}" class="btn bg-teal-gradient rounded-pill px-4 text-white">
                         <i class="fas fa-plus me-2"></i> Tambah
                     </a>
+                    @endcan
                 </div>
             </div>
 
@@ -47,6 +49,7 @@
                                 <span class="small text-muted ms-2">data</span>
                             </div>
 
+                            @can('employees.delete')
                             <div id="bulkActions" class="col-auto d-none border-start ps-3 ms-2">
                                 <div class="d-flex gap-2">
                                     <button type="button" class="btn btn-sm btn-outline-danger rounded-3"
@@ -55,6 +58,7 @@
                                     </button>
                                 </div>
                             </div>
+                            @endcan
 
                             <div class="col ms-auto">
                                 <div class="d-flex gap-2 justify-content-end">
@@ -88,9 +92,11 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light text-muted small text-uppercase">
                         <tr>
+                            @can('employees.delete')
                             <th class="px-4 text-center" width="50">
                                 <input type="checkbox" id="selectAll" class="form-check-input">
                             </th>
+                            @endcan
                             <th width="60">No</th>
                             <th>
                                 <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'name', 'sort_dir' => request('sort_dir') == 'asc' ? 'desc' : 'asc']) }}"
@@ -113,16 +119,19 @@
                                         class="fas fa-sort{{ request('sort_by') == 'join_date' ? (request('sort_dir') == 'asc' ? '-up' : '-down') : '' }} ms-1"></i>
                                 </a>
                             </th>
-                            <th class="text-end px-4">Aksi</th>
+                            <th>Status</th>
+                            <th class="text-center px-4">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($employees as $index => $emp)
                             <tr>
-                                <td class="px-4 text-center">
+                                @can('employees.delete')
+                                <td class="px-4">
                                     <input type="checkbox" name="ids[]" value="{{ $emp->id }}"
                                         class="form-check-input row-checkbox">
                                 </td>
+                                @endcan
                                 <td class="text-secondary small">{{ $employees->firstItem() + $index }}</td>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -152,31 +161,36 @@
                                 <td>
                                     <div class="form-check form-switch">
                                         <input class="form-check-input status-toggle" type="checkbox" role="switch"
-                                            data-id="{{ $emp->id }}" {{ $emp->is_active ? 'checked' : '' }}>
+                                            data-id="{{ $emp->id }}" {{ $emp->is_active ? 'checked' : '' }}
+                                            {{ auth()->user()->can('employees.edit') ? '' : 'disabled' }}>
                                         <label
                                             class="form-check-label small {{ $emp->is_active ? 'text-success' : 'text-danger' }}">
                                             {{ $emp->is_active ? 'Aktif' : 'Nonaktif' }}
                                         </label>
                                     </div>
                                 </td>
-                                <td class="text-end px-4">
-                                    <div class="d-flex justify-content-end gap-2">
+                                <td class="text-center px-4">
+                                    <div class="d-flex justify-content-center gap-2">
                                         <a href="{{ route('employees.show', $emp->id) }}"
                                             class="btn btn-sm btn-outline-info rounded-pill px-3">
                                             <i class="fas fa-eye"></i>
                                         </a>
+                                        @can('employees.edit')
                                         <a href="{{ route('employees.edit', $emp->id) }}"
                                             class="btn btn-sm btn-outline-teal rounded-pill px-3">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        @endcan
                                         <a href="{{ route('employees.download-single-pdf', $emp->id) }}"
                                             class="btn btn-sm btn-outline-danger rounded-pill px-3">
                                             <i class="fas fa-download"></i>
                                         </a>
+                                        @can('employees.delete')
                                         <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3"
                                             onclick="confirmDelete('{{ route('employees.destroy', $emp->id) }}')">
                                             <i class="fas fa-trash-can"></i>
                                         </button>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

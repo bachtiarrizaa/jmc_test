@@ -6,11 +6,13 @@
             <h3 class="fw-bold mb-0">Manajemen Role</h3>
             <p class="text-muted small mb-0">Kelola hak akses pengguna sistem.</p>
         </div>
+        @can('roles.create')
         <div class="col-md-6 text-md-end">
             <a href="{{ route('roles.create') }}" class="btn bg-teal-gradient text-white px-4 py-2 rounded-pill shadow-sm">
                 <i class="fas fa-plus me-2"></i> Tambah
             </a>
         </div>
+        @endcan
     </div>
 
     <div class="card border-0 shadow-sm rounded-4 mb-3">
@@ -47,7 +49,7 @@
                         <th class="ps-4 py-3" width="50">#</th>
                         <th class="py-3">Nama Role</th>
                         <th class="py-3">Permissions</th>
-                        <th class="py-3 text-end pe-4">Aksi</th>
+                        <th class="py-3 text-center px-4">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,21 +64,25 @@
                                     {{ $role->permissions_count ?? $role->permissions->count() }} Permission
                                 </span>
                             </td>
-                            <td class="text-end pe-4">
-                                <div class="d-flex justify-content-end gap-2">
+                            <td class="text-center px-4">
+                                <div class="d-flex justify-content-center gap-2">
                                     <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-3"
                                         onclick="viewPermissions('{{ $role->name }}', {{ json_encode($role->permissions->pluck('name')) }})">
                                         <i class="fas fa-eye me-1"></i> Lihat
                                     </button>
                                     @if($role->name !== 'Superadmin')
+                                        @can('roles.edit')
                                         <a href="{{ route('roles.edit', $role->id) }}"
                                             class="btn btn-sm btn-outline-teal rounded-pill px-3">
                                             <i class="fas fa-edit me-1"></i> Edit
                                         </a>
+                                        @endcan
+                                        @can('roles.delete')
                                         <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3"
                                             onclick="confirmDelete('{{ route('roles.destroy', $role->id) }}')">
                                             <i class="fas fa-trash"></i>
                                         </button>
+                                        @endcan
                                     @else
                                         <span class="badge bg-secondary-subtle text-secondary px-3 py-2 rounded-pill">System
                                             Protected</span>

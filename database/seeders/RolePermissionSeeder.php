@@ -75,36 +75,58 @@ class RolePermissionSeeder extends Seeder
         $adminHrd = Role::firstOrCreate(['name' => 'Admin HRD']);
         $karyawan = Role::firstOrCreate(['name' => 'Karyawan']);
 
-        $superadmin->givePermissionTo(Permission::all());
-
-        $managerHrd->givePermissionTo(['dashboard.index', 'activity_logs.index']);
-
-        $karyawan->givePermissionTo(['dashboard.index']);
-
-        $adminHrd->givePermissionTo([
+        $superadmin->syncPermissions([
             'dashboard.index',
+            'roles.index',
+            'roles.create',
+            'roles.edit',
+            'roles.delete',
+            'users.index',
+            'users.create',
+            'users.edit',
+            'users.delete',
+            'activity_logs.index',
+        ]);
+
+        $managerHrd->syncPermissions([
+            'dashboard.index',
+            'users.index',
+            'users.edit',
+            'employees.index',
+            'transport_allowances.index',
             'departments.index',
-            'departments.create',
-            'departments.edit',
             'positions.index',
-            'positions.create',
-            'positions.edit',
             'employee_types.index',
-            'employee_types.create',
-            'employee_types.edit',
+        ]);
+
+        $adminHrd->syncPermissions([
+            'dashboard.index',
+            'users.index',
+            'users.edit',
             'employees.index',
             'employees.create',
             'employees.edit',
             'employees.delete',
-            'users.index',
-            'users.edit',
+            'employees.export',
+            'transport_allowances.index',
             'transport_settings.index',
             'transport_settings.create',
             'transport_settings.edit',
-            'transport_allowances.index',
-            'transport_allowances.create',
-            'transport_allowances.edit',
-            'transport_allowances.delete'
+            'transport_settings.delete',
+            'departments.index',
+            'departments.create',
+            'departments.edit',
+            'departments.delete',
+            'positions.index',
+            'positions.create',
+            'positions.edit',
+            'positions.delete',
+            'employee_types.index',
+            'employee_types.create',
+            'employee_types.edit',
+            'employee_types.delete',
         ]);
+
+        $karyawan->syncPermissions(['dashboard.index']);
     }
 }

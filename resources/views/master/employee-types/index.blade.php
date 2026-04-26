@@ -10,9 +10,11 @@
                     <h3 class="fw-bold mb-0">Daftar Tipe Pegawai</h3>
                     <p class="text-muted small">Kelola kategori/status kepegawaian perusahaan.</p>
                 </div>
+                @can('employee_types.create')
                 <button type="button" class="btn bg-teal-gradient rounded-pill px-4" onclick="openCreateModal()">
                     <i class="fas fa-plus me-2"></i> Tambah
                 </button>
+                @endcan
             </div>
 
             <div class="card border-0 shadow-sm rounded-4 mb-3">
@@ -51,7 +53,7 @@
                                 <th class="px-4" width="80">No</th>
                                 <th>Nama Tipe</th>
                                 <th>Slug</th>
-                                <th class="text-end px-4">Aksi</th>
+                                <th class="text-center px-4">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -60,16 +62,20 @@
                                     <td class="px-4 text-secondary">{{ $types->firstItem() + $index }}</td>
                                     <td><span class="fw-bold text-dark">{{ $type->name }}</span></td>
                                     <td><code class="text-teal">{{ $type->slug }}</code></td>
-                                    <td class="text-end px-4">
-                                        <div class="d-flex justify-content-end gap-2">
+                                    <td class="text-center px-4">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            @can('employee_types.edit')
                                             <button type="button" class="btn btn-sm btn-outline-teal rounded-pill px-3"
                                                 onclick="openEditModal({{ $type->id }}, '{{ $type->name }}')">
                                                 <i class="fas fa-edit me-1"></i> Edit
                                             </button>
+                                            @endcan
+                                            @can('employee_types.delete')
                                             <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3"
                                                 onclick="confirmDelete('{{ route('employee-types.destroy', $type->id) }}')">
                                                 <i class="fas fa-trash"></i>
                                             </button>
+                                            @endcan
                                         </div>
                                     </td>
                                 </tr>

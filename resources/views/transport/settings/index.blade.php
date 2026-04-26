@@ -10,20 +10,22 @@
                     <h3 class="fw-bold mb-0">Pengaturan Tarif Transport</h3>
                     <p class="text-muted small">Kelola besaran tarif per KM dan tanggal efektifnya.</p>
                 </div>
-                <button type="button" class="btn bg-teal-gradient rounded-pill px-4" onclick="openCreateModal()">
-                    <i class="fas fa-plus me-1"></i> Tambah
-                </button>
+                @can('transport_settings.create')
+                    <button type="button" class="btn bg-teal-gradient rounded-pill px-4" onclick="openCreateModal()">
+                        <i class="fas fa-plus me-1"></i> Tambah
+                    </button>
+                @endcan
             </div>
 
-            <!-- Filter Card -->
             <div class="card border-0 shadow-sm rounded-4 mb-3">
                 <div class="card-body p-3">
                     <form action="{{ route('transport-settings.index') }}" method="GET" id="filterForm">
                         <div class="d-flex justify-content-between align-items-center">
-                            <!-- Left Side: Per Page -->
                             <div class="d-flex align-items-center">
                                 <span class="small text-muted me-2">Tampilkan</span>
-                                <select name="per_page" class="form-select form-select-sm rounded-3 shadow-none border-light" style="width: auto;" onchange="this.form.submit()">
+                                <select name="per_page"
+                                    class="form-select form-select-sm rounded-3 shadow-none border-light"
+                                    style="width: auto;" onchange="this.form.submit()">
                                     <option value="5" {{ request('per_page') == 5 ? 'selected' : '' }}>5</option>
                                     <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10</option>
                                     <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
@@ -35,8 +37,9 @@
                             <div class="d-flex gap-2 align-items-center">
                                 <div class="search-container mb-0" style="min-width: 200px;">
                                     <i class="fas fa-search"></i>
-                                    <input type="text" name="search" class="form-control form-control-sm" 
-                                        placeholder="Cari" value="{{ request('search') }}" onkeyup="if(event.keyCode == 13) this.form.submit()">
+                                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari"
+                                        value="{{ request('search') }}"
+                                        onkeyup="if(event.keyCode == 13) this.form.submit()">
                                 </div>
                             </div>
                         </div>
@@ -53,7 +56,7 @@
                                 <th>Tarif Dasar (Base Fare)</th>
                                 <th>Tanggal Efektif</th>
                                 <th>Dibuat Oleh</th>
-                                <th class="text-end px-4">Aksi</th>
+                                <th class="text-center px-4">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,7 +64,8 @@
                                 <tr>
                                     <td class="px-4 text-secondary">{{ $settings->firstItem() + $index }}</td>
                                     <td>
-                                        <span class="fw-bold text-dark">Rp {{ number_format($setting->base_fare, 0, ',', '.') }}</span>
+                                        <span class="fw-bold text-dark">Rp
+                                            {{ number_format($setting->base_fare, 0, ',', '.') }}</span>
                                         <span class="small text-muted">/ KM</span>
                                     </td>
                                     <td>
@@ -71,16 +75,20 @@
                                         </span>
                                     </td>
                                     <td class="small text-muted">{{ $setting->creator?->username ?? 'System' }}</td>
-                                    <td class="text-end px-4">
-                                        <div class="d-flex justify-content-end gap-2">
-                                            <button type="button" class="btn btn-sm btn-outline-teal rounded-pill px-3"
-                                                onclick="openEditModal({{ $setting->id }}, {{ $setting->base_fare }}, '{{ $setting->effective_date->format('Y-m-d') }}')">
-                                                <i class="fas fa-edit me-1"></i> Edit
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3"
-                                                onclick="confirmDelete('{{ route('transport-settings.destroy', $setting->id) }}')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
+                                    <td class="text-center px-4">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            @can('transport_settings.edit')
+                                                <button type="button" class="btn btn-sm btn-outline-teal rounded-pill px-3"
+                                                    onclick="openEditModal({{ $setting->id }}, {{ $setting->base_fare }}, '{{ $setting->effective_date->format('Y-m-d') }}')">
+                                                    <i class="fas fa-edit me-1"></i> Edit
+                                                </button>
+                                            @endcan
+                                            @can('transport_settings.delete')
+                                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                                    onclick="confirmDelete('{{ route('transport-settings.destroy', $setting->id) }}')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            @endcan
                                         </div>
                                     </td>
                                 </tr>
@@ -107,7 +115,6 @@
         </div>
     </div>
 
-    <!-- Modal Form -->
     <div class="modal fade" id="settingModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow rounded-4">
@@ -123,13 +130,14 @@
                             <label class="form-label small fw-bold text-muted text-uppercase">Tarif Dasar (Per KM)</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0">Rp</span>
-                                <input type="text" name="base_fare" id="baseFareInput" class="form-control rounded-end-3 border-start-0"
-                                    placeholder="Rp 0" required>
+                                <input type="text" name="base_fare" id="baseFareInput"
+                                    class="form-control rounded-end-3 border-start-0" placeholder="Rp 0" required>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small fw-bold text-muted text-uppercase">Tanggal Efektif</label>
-                            <input type="date" name="effective_date" id="effectiveDateInput" class="form-control rounded-3" required>
+                            <input type="date" name="effective_date" id="effectiveDateInput" class="form-control rounded-3"
+                                required>
                         </div>
                     </div>
                     <div class="modal-footer border-top-0 pb-4 px-4">
@@ -158,12 +166,12 @@
                         return new Intl.NumberFormat('id-ID').format(number);
                     };
 
-                    baseFareInput.addEventListener('input', function(e) {
+                    baseFareInput.addEventListener('input', function (e) {
                         let value = this.value.replace(/[^0-9]/g, '');
                         this.value = value ? formatRupiah(value) : '';
                     });
 
-                    form.addEventListener('submit', function() {
+                    form.addEventListener('submit', function () {
                         baseFareInput.value = baseFareInput.value.replace(/\./g, '');
                     });
 

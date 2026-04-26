@@ -23,7 +23,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/refresh-captcha', [AuthController::class, 'refreshCaptcha']);
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'check_status'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')
         ->middleware('permission:dashboard.index');
@@ -58,6 +58,16 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy')->middleware('permission:roles.delete');
     });
 
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\UserController::class, 'index'])->name('index')->middleware('permission:users.index');
+        Route::get('/create', [\App\Http\Controllers\UserController::class, 'create'])->name('create')->middleware('permission:users.create');
+        Route::post('/', [\App\Http\Controllers\UserController::class, 'store'])->name('store')->middleware('permission:users.create');
+        Route::get('/{user}/edit', [\App\Http\Controllers\UserController::class, 'edit'])->name('edit')->middleware('permission:users.edit');
+        Route::put('/{user}', [\App\Http\Controllers\UserController::class, 'update'])->name('update')->middleware('permission:users.edit');
+        Route::delete('/{user}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('destroy')->middleware('permission:users.delete');
+        Route::get('/check-username', [\App\Http\Controllers\UserController::class, 'checkUsername'])->name('check-username');
+    });
+
     Route::prefix('employees')->name('employees.')->group(function () {
         Route::get('/', [EmployeeController::class, 'index'])->name('index')->middleware('permission:employees.index');
         Route::get('/create', [EmployeeController::class, 'create'])->name('create')->middleware('permission:employees.create');
@@ -66,12 +76,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/{employee}/edit', [EmployeeController::class, 'edit'])->name('edit')->middleware('permission:employees.edit');
         Route::put('/{employee}', [EmployeeController::class, 'update'])->name('update')->middleware('permission:employees.edit');
         Route::delete('/{employee}', [EmployeeController::class, 'destroy'])->name('destroy')->middleware('permission:employees.delete');
-        
-        // Bulk Actions
+
         Route::post('/bulk-delete', [EmployeeController::class, 'bulkDelete'])->name('bulk-delete')->middleware('permission:employees.delete');
         Route::post('/bulk-update-status', [EmployeeController::class, 'bulkUpdateStatus'])->name('bulk-update-status')->middleware('permission:employees.edit');
-        
-        // Exports
+
         Route::get('/export/pdf', [EmployeeController::class, 'exportPdf'])->name('export-pdf')->middleware('permission:employees.index');
         Route::get('/export/excel', [EmployeeController::class, 'exportExcel'])->name('export-excel')->middleware('permission:employees.index');
         Route::get('/{employee}/download-pdf', [EmployeeController::class, 'downloadSinglePdf'])->name('download-single-pdf')->middleware('permission:employees.index');

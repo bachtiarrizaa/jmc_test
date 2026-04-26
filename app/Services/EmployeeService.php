@@ -78,7 +78,6 @@ class EmployeeService
 
             $employee->update($data);
 
-            // Update/Create Address
             $employee->address()->updateOrCreate([], [
                 'district' => $data['district'],
                 'regency' => $data['regency'],
@@ -86,7 +85,6 @@ class EmployeeService
                 'full_address' => $data['full_address'],
             ]);
 
-            // Update Educations (Simple sync by delete and recreate)
             if (isset($data['educations'])) {
                 $employee->educations()->delete();
                 if (!empty($data['educations'])) {
@@ -100,6 +98,12 @@ class EmployeeService
 
     public function delete(Employee $employee)
     {
+        if ($employee->user && $employee->user->hasRole('Superadmin')) {
+            if (!auth()->user()->hasRole('Superadmin')) {
+                throw new \Exception("Anda tidak memiliki izin untuk menghapus pegawai dengan role Superadmin.");
+            }
+        }
+
         if ($employee->photo) {
             Storage::disk('public')->delete($employee->photo);
         }

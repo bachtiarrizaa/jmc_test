@@ -10,7 +10,7 @@
         </div>
     </div>
 
-    @if(in_array($role, ['Manager HRD', 'Superadmin']))
+    @if(in_array($role, ['Manager HRD', 'Admin HRD']))
         <div class="row g-4 mb-4">
             <div class="col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden bg-teal-gradient text-white">

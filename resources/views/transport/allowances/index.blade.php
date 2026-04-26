@@ -10,17 +10,17 @@
                     <h3 class="fw-bold mb-0">Tunjangan Transport Pegawai</h3>
                     <p class="text-muted small">Kelola data tunjangan harian berdasarkan jarak tempuh.</p>
                 </div>
+                @can('transport_allowances.create')
                 <button type="button" class="btn bg-teal-gradient rounded-pill px-4" onclick="openCreateModal()">
                     <i class="fas fa-plus me-1"></i> Tambah
                 </button>
+                @endcan
             </div>
 
-            <!-- Filter Card -->
             <div class="card border-0 shadow-sm rounded-4 mb-3">
                 <div class="card-body p-3">
                     <form action="{{ route('transport-allowances.index') }}" method="GET" id="filterForm">
                         <div class="d-flex justify-content-between align-items-center">
-                            <!-- Left Side: Per Page -->
                             <div class="d-flex align-items-center">
                                 <span class="small text-muted me-2">Tampilkan</span>
                                 <select name="per_page" class="form-select form-select-sm rounded-3 shadow-none border-light" style="width: auto;" onchange="this.form.submit()">
@@ -32,7 +32,6 @@
                                 <span class="small text-muted ms-2">data</span>
                             </div>
 
-                            <!-- Right Side: Search, Month, Year -->
                             <div class="d-flex gap-2 align-items-center">
                                 <div class="search-container mb-0" style="min-width: 200px;">
                                     <i class="fas fa-search"></i>
@@ -60,8 +59,6 @@
                     </form>
                 </div>
             </div>
-
-            <!-- Table Card -->
             <div class="card border-0 shadow-sm overflow-hidden rounded-4">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
@@ -73,7 +70,7 @@
                                 <th class="text-center">Jarak (KM)</th>
                                 <th class="text-center">Hari Kerja</th>
                                 <th class="text-end">Total Tunjangan</th>
-                                <th class="text-end px-4">Aksi</th>
+                                <th class="text-center px-4">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -109,16 +106,20 @@
                                         <div class="fw-bold text-teal">Rp {{ number_format($allowance->amount, 0, ',', '.') }}</div>
                                         <div class="small text-muted" style="font-size: 10px;">@ Rp {{ number_format($allowance->setting->base_fare, 0, ',', '.') }}</div>
                                     </td>
-                                    <td class="text-end px-4">
-                                        <div class="d-flex justify-content-end gap-2">
+                                    <td class="text-center px-4">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            @can('transport_allowances.edit')
                                             <button type="button" class="btn btn-sm btn-outline-teal rounded-pill px-3"
                                                 onclick="openEditModal({{ $allowance }})">
                                                 <i class="fas fa-edit"></i>
                                             </button>
+                                            @endcan
+                                            @can('transport_allowances.delete')
                                             <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3"
                                                 onclick="confirmDelete('{{ route('transport-allowances.destroy', $allowance->id) }}')">
                                                 <i class="fas fa-trash"></i>
                                             </button>
+                                            @endcan
                                         </div>
                                     </td>
                                 </tr>
@@ -147,8 +148,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Modal Form -->
     <div class="modal fade" id="allowanceModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow rounded-4">
@@ -267,7 +266,6 @@
                         methodInput.value = 'POST';
                         
                         employeeId.value = '';
-                        // settingId stays at latest
                         kmInput.value = '';
                         workingDaysInput.value = '';
                         monthInput.value = "{{ request('month', date('m')) }}";
