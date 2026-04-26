@@ -9,6 +9,8 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\TransportSettingController;
 use App\Http\Controllers\TransportAllowanceController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\RegionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -54,6 +56,33 @@ Route::middleware('auth')->group(function () {
         Route::get('/{role}/edit', [RoleController::class, 'edit'])->name('edit')->middleware('permission:roles.edit');
         Route::put('/{role}', [RoleController::class, 'update'])->name('update')->middleware('permission:roles.edit');
         Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy')->middleware('permission:roles.delete');
+    });
+
+    Route::prefix('employees')->name('employees.')->group(function () {
+        Route::get('/', [EmployeeController::class, 'index'])->name('index')->middleware('permission:employees.index');
+        Route::get('/create', [EmployeeController::class, 'create'])->name('create')->middleware('permission:employees.create');
+        Route::post('/', [EmployeeController::class, 'store'])->name('store')->middleware('permission:employees.create');
+        Route::get('/{employee}', [EmployeeController::class, 'show'])->name('show')->middleware('permission:employees.index');
+        Route::get('/{employee}/edit', [EmployeeController::class, 'edit'])->name('edit')->middleware('permission:employees.edit');
+        Route::put('/{employee}', [EmployeeController::class, 'update'])->name('update')->middleware('permission:employees.edit');
+        Route::delete('/{employee}', [EmployeeController::class, 'destroy'])->name('destroy')->middleware('permission:employees.delete');
+        
+        // Bulk Actions
+        Route::post('/bulk-delete', [EmployeeController::class, 'bulkDelete'])->name('bulk-delete')->middleware('permission:employees.delete');
+        Route::post('/bulk-update-status', [EmployeeController::class, 'bulkUpdateStatus'])->name('bulk-update-status')->middleware('permission:employees.edit');
+        
+        // Exports
+        Route::get('/export/pdf', [EmployeeController::class, 'exportPdf'])->name('export-pdf')->middleware('permission:employees.index');
+        Route::get('/export/excel', [EmployeeController::class, 'exportExcel'])->name('export-excel')->middleware('permission:employees.index');
+        Route::get('/{employee}/download-pdf', [EmployeeController::class, 'downloadSinglePdf'])->name('download-single-pdf')->middleware('permission:employees.index');
+    });
+
+    Route::prefix('regions')->name('regions.')->group(function () {
+        Route::get('/provinces', [RegionController::class, 'provinces'])->name('provinces');
+        Route::get('/regencies/{provinceId}', [RegionController::class, 'regencies'])->name('regencies');
+        Route::get('/districts/{regencyId}', [RegionController::class, 'districts'])->name('districts');
+        Route::get('/all-regencies', [RegionController::class, 'allRegencies'])->name('all-regencies');
+        Route::get('/search-regencies', [RegionController::class, 'searchRegencies'])->name('search-regencies');
     });
 
     Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index')

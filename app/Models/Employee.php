@@ -21,6 +21,8 @@ class Employee extends Model
         'position_id', 'department_id', 'employee_type_id', 'is_active'
     ];
 
+    protected $appends = ['age', 'tenure'];
+
     protected function casts(): array
     {
         return [
@@ -33,9 +35,20 @@ class Employee extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['nip', 'name', 'department_id', 'position_id'])
+            ->logOnly(['nip', 'name', 'department.name', 'position.name', 'is_active'])
+            ->logOnlyDirty()
             ->useLogName('Employee')
             ->setDescriptionForEvent(fn(string $eventName) => "Data pegawai ini telah {$eventName}");
+    }
+
+    public function getAgeAttribute(): int
+    {
+        return $this->birthdate ? $this->birthdate->age : 0;
+    }
+
+    public function getTenureAttribute(): int
+    {
+        return $this->join_date ? $this->join_date->diffInYears(now()) : 0;
     }
 
     public function user(): HasOne
