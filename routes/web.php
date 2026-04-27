@@ -91,6 +91,7 @@ Route::middleware(['auth', 'check_status'])->group(function () {
         Route::get('/districts/{regencyId}', [RegionController::class, 'districts'])->name('districts');
         Route::get('/all-regencies', [RegionController::class, 'allRegencies'])->name('all-regencies');
         Route::get('/search-regencies', [RegionController::class, 'searchRegencies'])->name('search-regencies');
+        Route::get('/search-districts', [RegionController::class, 'searchDistricts'])->name('search-districts');
     });
 
     Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index')

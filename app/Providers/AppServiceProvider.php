@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Event;
+use App\Listeners\LogAuthAction;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,5 +23,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+        Event::subscribe(LogAuthAction::class);
     }
 }

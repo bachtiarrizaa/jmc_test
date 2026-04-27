@@ -68,7 +68,7 @@
                                 <div class="input-group">
                                     <input type="password" name="password" id="password"
                                         class="form-control rounded-start-3 @error('password') is-invalid @enderror"
-                                        placeholder="Auto-generated or type manually">
+                                        placeholder="Kosongkan untuk generate otomatis">
                                     <button type="button" class="btn btn-outline-teal rounded-end-3"
                                         onclick="togglePassword('password')">
                                         <i class="fas fa-eye" id="passwordIcon"></i>

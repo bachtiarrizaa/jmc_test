@@ -10,15 +10,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
+use App\Traits\OwnedResource;
 
 class Employee extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity;
+    use HasFactory, SoftDeletes, LogsActivity, OwnedResource;
 
     protected $fillable = [
         'nip', 'name', 'email', 'phone', 'photo', 'gender', 'marital_status',
         'children_count', 'birthdate', 'birthplace', 'join_date',
-        'position_id', 'department_id', 'employee_type_id', 'is_active'
+        'position_id', 'department_id', 'employee_type_id', 'is_active', 'created_by'
     ];
 
     protected $appends = ['age', 'tenure'];
@@ -48,7 +49,7 @@ class Employee extends Model
 
     public function getTenureAttribute(): int
     {
-        return $this->join_date ? $this->join_date->diffInYears(now()) : 0;
+        return $this->join_date ? \Carbon\Carbon::parse($this->join_date)->diffInYears(now()) : 0;
     }
 
     public function user(): HasOne

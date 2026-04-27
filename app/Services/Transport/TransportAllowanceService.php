@@ -10,11 +10,23 @@ class TransportAllowanceService
 {
     public function getAllPaginated($search = null, $month = null, $year = null, $perPage = 10)
     {
-        return TransportAllowance::with(['employee', 'setting'])
-            ->when($search, function($query) use ($search) {
-                $query->whereHas('employee', function($q) use ($search) {
-                    $q->where('name', 'LIKE', "%{$search}%")
-                      ->orWhere('nip', 'LIKE', "%{$search}%");
+        $user = auth()->user();
+        $query = TransportAllowance::with(['employee', 'setting']);
+
+        // Sesuai RBAC: Manager HRD & Admin HRD hanya RO (data yang dia input)
+        // Superadmin bisa lihat semua
+        if ($user && !$user->hasRole('Superadmin')) {
+            $query->where(function($q) use ($user) {
+                $q->where('created_by', $user->id)
+                  ->orWhereNull('created_by');
+            });
+        }
+
+        return $query
+            ->when($search, function($q) use ($search) {
+                $q->whereHas('employee', function($eq) use ($search) {
+                    $eq->where('name', 'LIKE', "%{$search}%")
+                       ->orWhere('nip', 'LIKE', "%{$search}%");
                 });
             })
             ->when($month, fn($q) => $q->where('month', $month))

@@ -148,7 +148,7 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label small fw-bold text-muted text-uppercase">Usia (Otomatis)</label>
-                                <input type="text" id="ageDisplay" class="form-control rounded-3 bg-light" disabled
+                                <input type="text" id="ageDisplay" class="form-control rounded-3 bg-light" readonly
                                     value="{{ $employee->age }} Tahun">
                             </div>
                         </div>
@@ -163,21 +163,15 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold text-muted text-uppercase">Provinsi</label>
-                                <select name="province" id="provinceSelect"
-                                    class="form-select select2-prov @error('province') is-invalid @enderror" required>
-                                    <option value="{{ old('province', $employee->address?->province) }}" selected>
-                                        {{ old('province', $employee->address?->province) }}
-                                    </option>
-                                </select>
+                                <input type="text" name="province" id="provinceInput"
+                                    class="form-control rounded-3 bg-light" readonly 
+                                    value="{{ old('province', $employee->address?->province) }}" placeholder="Pilih Kecamatan...">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold text-muted text-uppercase">Kabupaten/Kota</label>
-                                <select name="regency" id="regencySelect"
-                                    class="form-select select2-reg @error('regency') is-invalid @enderror" required>
-                                    <option value="{{ old('regency', $employee->address?->regency) }}" selected>
-                                        {{ old('regency', $employee->address?->regency) }}
-                                    </option>
-                                </select>
+                                <input type="text" name="regency" id="regencyInput"
+                                    class="form-control rounded-3 bg-light" readonly 
+                                    value="{{ old('regency', $employee->address?->regency) }}" placeholder="Pilih Kecamatan...">
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold text-muted text-uppercase">Kecamatan</label>
@@ -205,7 +199,7 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label small fw-bold text-muted text-uppercase">Tanggal Masuk</label>
-                                <input type="date" name="join_date" class="form-control rounded-3"
+                                <input type="date" name="join_date" id="join_date" class="form-control rounded-3"
                                     value="{{ old('join_date', $employee->join_date->format('Y-m-d')) }}" required>
                             </div>
                             <div class="col-md-4">
@@ -319,17 +313,20 @@
             });
         }
 
-        const birthdateInput = document.getElementById('birthdate');
+        const joinDateInput = document.getElementById('join_date');
         const ageDisplay = document.getElementById('ageDisplay');
-        if (birthdateInput) {
-            birthdateInput.addEventListener('change', function () {
+        if (joinDateInput) {
+            joinDateInput.addEventListener('change', function () {
                 if (this.value) {
-                    const birthDate = new Date(this.value);
-                    const today = new Date();
-                    let age = today.getFullYear() - birthDate.getFullYear();
-                    const m = today.getMonth() - birthDate.getMonth();
-                    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-                    ageDisplay.value = age + " Tahun";
+                    const birthDateVal = document.getElementById('birthdate').value;
+                    if (birthDateVal) {
+                        const birthDate = new Date(birthDateVal);
+                        const today = new Date();
+                        let age = today.getFullYear() - birthDate.getFullYear();
+                        const m = today.getMonth() - birthDate.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+                        ageDisplay.value = age + " Tahun";
+                    }
                 } else {
                     ageDisplay.value = "-";
                 }
@@ -351,57 +348,26 @@
             }
         });
 
-        const provSelect = $('#provinceSelect');
-        const regSelect = $('#regencySelect');
         const distSelect = $('#districtSelect');
+        const regInput = $('#regencyInput');
+        const provInput = $('#provinceInput');
 
-        provSelect.select2({ theme: 'bootstrap-5' });
-        regSelect.select2({ theme: 'bootstrap-5' });
-        distSelect.select2({ theme: 'bootstrap-5' });
-
-        fetch(`${baseUrl}/provinces`)
-            .then(r => r.json())
-            .then(data => {
-                data.forEach(p => {
-                    const currentProv = "{{ old('province', $employee->address?->province) }}";
-                    const isSelected = p.name === currentProv;
-                    if (!isSelected) {
-                        provSelect.append(`<option value="${p.name}" data-id="${p.id}">${p.name}</option>`);
-                    } else {
-                        provSelect.find(':selected').attr('data-id', p.id);
-                        provSelect.trigger('change');
-                    }
-                });
-            });
-
-        provSelect.on('change', function () {
-            const provId = $(this).find(':selected').data('id');
-            const currentReg = "{{ old('regency', $employee->address?->regency) }}";
-            regSelect.empty().append(new Option('Pilih Kabupaten...', '')).prop('disabled', !provId);
-            distSelect.empty().append(new Option('Pilih Kecamatan...', '')).prop('disabled', true);
-            if (provId) {
-                fetch(`${baseUrl}/regencies/${provId}`).then(r => r.json()).then(data => {
-                    data.forEach(r => {
-                        const isSelected = r.name === currentReg;
-                        regSelect.append(`<option value="${r.name}" data-id="${r.id}" ${isSelected ? 'selected' : ''}>${r.name}</option>`);
-                    });
-                    if (currentReg) regSelect.trigger('change');
-                });
+        distSelect.select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Cari Kecamatan...',
+            minimumInputLength: 3,
+            ajax: {
+                url: `${baseUrl}/search-districts`,
+                dataType: 'json',
+                delay: 250,
+                data: (params) => ({ q: params.term }),
+                processResults: (data) => ({ results: data.results }),
+                cache: true
             }
-        });
-
-        regSelect.on('change', function () {
-            const regId = $(this).find(':selected').data('id');
-            const currentDist = "{{ old('district', $employee->address?->district) }}";
-            distSelect.empty().append(new Option('Pilih Kecamatan...', '')).prop('disabled', !regId);
-            if (regId) {
-                fetch(`${baseUrl}/districts/${regId}`).then(r => r.json()).then(data => {
-                    data.forEach(d => {
-                        const isSelected = d.name === currentDist;
-                        distSelect.append(`<option value="${d.name}" ${isSelected ? 'selected' : ''}>${d.name}</option>`);
-                    });
-                });
-            }
+        }).on('select2:select', function (e) {
+            const data = e.params.data;
+            regInput.val(data.regency);
+            provInput.val(data.province);
         });
     });
 

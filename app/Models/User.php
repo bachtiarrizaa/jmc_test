@@ -8,10 +8,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
+use App\Traits\OwnedResource;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles, SoftDeletes;
+    use HasFactory, Notifiable, HasRoles, SoftDeletes, OwnedResource, LogsActivity;
 
     protected $fillable = [
         'employee_id',
@@ -21,6 +24,7 @@ class User extends Authenticatable
         'password',
         'is_active',
         'last_login_at',
+        'created_by',
     ];
 
     protected $hidden = [
@@ -41,5 +45,13 @@ class User extends Authenticatable
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['username', 'email', 'is_active', 'role'])
+            ->useLogName('User')
+            ->setDescriptionForEvent(fn(string $eventName) => "User ini telah {$eventName}");
     }
 }

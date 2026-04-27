@@ -36,13 +36,18 @@ class UserController extends Controller
         $validated = $request->validate([
             'username' => 'required|string|min:6|unique:users,username|regex:/^[a-z0-9]+$/',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
+            'password' => 'nullable|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
             'role' => 'required|exists:roles,name',
             'employee_id' => 'required|exists:employees,id',
             'is_active' => 'boolean'
         ]);
 
-        $this->userService->create($validated);
+        $data = $request->validated();
+        if (empty($data['password'])) {
+            $data['password'] = \Illuminate\Support\Str::random(12);
+        }
+
+        $this->userService->create($data);
         return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan.');
     }
 

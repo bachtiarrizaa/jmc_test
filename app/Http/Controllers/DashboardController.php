@@ -19,7 +19,7 @@ class DashboardController extends Controller
             'role' => $role
         ];
 
-        if (in_array($role, ['Manager HRD', 'Admin HRD'])) {
+        if ($role === 'Manager HRD') {
             $data['total_employees'] = Employee::count();
 
             $data['total_permanent'] = Employee::whereHas('type', function ($q) {
